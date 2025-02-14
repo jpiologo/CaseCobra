@@ -86,3 +86,5 @@ const Navbar = () => {
 }
 
 export default Navbar
+
+//I stoped on 55:10
