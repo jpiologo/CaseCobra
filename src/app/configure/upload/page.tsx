@@ -1,18 +1,48 @@
 'use client'
 
+import { toast } from 'sonner'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
+import { useUploadThing } from '@/lib/uploadthing'
 import { Image, Loader2, MousePointerSquareDashed } from 'lucide-react'
 import { useState, useTransition } from 'react'
-import Dropzone, { FileRejection } from 'react-dropzone'
+import Dropzone, { type FileRejection } from 'react-dropzone'
+import { useRouter } from 'next/navigation'
 
 const Page = () => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
+  const router = useRouter()
 
-  const onDropRejected = () => {}
-  const onDropAccepted = () => {}
-  const isUploading = false
+  const { startUpload, isUploading } = useUploadThing('imageUploader', {
+    onClientUploadComplete: ([data]) => {
+      const configId = data.serverData.configId
+      startTransition(() => {
+        router.push(`/configure/design?id=${configId}`)
+      })
+    },
+    onUploadProgress(p) {
+      setUploadProgress(p)
+    },
+  })
+
+  const onDropRejected = (rejectedFiles: FileRejection[]) => {
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    rejectedFiles.forEach(({ file }) => {
+      toast.error(
+        `Type not supported: "${file.name}". Please choose a PNG, JPG or JPEG image instead.`,
+      )
+    })
+
+    setIsDragOver(false)
+  }
+
+  const onDropAccepted = (acceptedFiles: File[]) => {
+    startUpload(acceptedFiles, { configId: undefined })
+
+    setIsDragOver(false)
+  }
+
   const [isPending, startTransition] = useTransition()
 
   return (
@@ -53,30 +83,30 @@ const Page = () => {
                 {isUploading ? (
                   <div className='flex flex-col items-center'>
                     <p>Uploading...</p>
-                    <Progress value={uploadProgress} className='mt-2 w-40 h-2 bg-gray-300' />
+                    <Progress
+                      value={uploadProgress}
+                      className='mt-2 w-40 h-2 bg-gray-300'
+                    />
                   </div>
                 ) : isPending ? (
                   <div className='flex flex-col items-center'>
                     <p>Redirecting, please wait...</p>
                   </div>
                 ) : isDragOver ? (
-                    <p>
-                        <span className='font-semibold'>
-                            Drop File
-                        </span>{' '}
-                        to upload
-                    </p>
+                  <p>
+                    <span className='font-semibold'>Drop File</span> to upload
+                  </p>
                 ) : (
                   <p>
-                    <span className='font-semibold'>
-                        Click to upload
-                    </span>{' '}
-                    or drag and drop
+                    <span className='font-semibold'>Click to upload</span> or
+                    drag and drop
                   </p>
                 )}
               </div>
 
-              {isPending ? null : <p className='text-xs text-zinc-500'>PNG, JPG, JPEG</p>}
+              {isPending ? null : (
+                <p className='text-xs text-zinc-500'>PNG, JPG, JPEG</p>
+              )}
             </div>
           )}
         </Dropzone>
