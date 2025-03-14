@@ -263,15 +263,20 @@ export default function Home() {
               Wireless charging compatible
             </li>
             <li className='w-fit'>
-              <Check className='h-5 w-5 text-green-600 inline mr-1.5' />
-              5 year print warranty
+              <Check className='h-5 w-5 text-green-600 inline mr-1.5' />5 year
+              print warranty
             </li>
 
             <div className='flex justify-center'>
-              <Link className={buttonVariants({
-                size: 'xl',
-                className: 'mx-auto mt-8'
-              })} href='/configure/upload' >Create your case now <ArrowRight className='size-4 ml-1.5'/> </Link>
+              <Link
+                className={buttonVariants({
+                  size: 'xl',
+                  className: 'mx-auto mt-8',
+                })}
+                href='/configure/upload'
+              >
+                Create your case now <ArrowRight className='size-4 ml-1.5' />{' '}
+              </Link>
             </div>
           </ul>
         </MaxWidthWrapper>
@@ -281,4 +286,4 @@ export default function Home() {
 }
 
 //npm run dev
-//2:18:30
+//3:26:40
