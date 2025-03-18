@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn, formatPrice } from '@/lib/utils'
 import NextImage from 'next/image'
 import { Rnd } from 'react-rnd'
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from '@/components/ui/use-toast'
 import { RadioGroup, Radio, Description } from '@headlessui/react'
 import {
   COLORS,
@@ -103,7 +103,7 @@ const DesignConfigurator = ({
         actualX,
         actualY,
         renderedDimension.width,
-        renderedDimension.height
+        renderedDimension.height,
       )
 
       const base64 = canvas.toDataURL()
@@ -115,8 +115,9 @@ const DesignConfigurator = ({
       await startUpload([file], { configId })
     } catch (err) {
       toast({
-        title: "Something went wrong!",
-        description: "There was a problem while saving your config, please try again.",
+        title: 'Something went wrong!',
+        description:
+          'There was a problem while saving your config, please try again.',
         variant: 'destructive',
       })
     }
@@ -125,11 +126,11 @@ const DesignConfigurator = ({
   function base64ToBlob(base64Data: string, mimeType: string) {
     const byteCharacters = atob(base64)
     const byteNumbers = new Array(byteCharacters.length)
-    for(let i = 0; i < byteCharacters.length; i++) {
+    for (let i = 0; i < byteCharacters.length; i++) {
       byteNumbers[i] = byteCharacters.charCodeAt(i)
     }
     const byteArray = new Uint8Array(byteNumbers)
-    return new Blob([byteArray], {type: mimeType})
+    return new Blob([byteArray], { type: mimeType })
   }
 
   return (
