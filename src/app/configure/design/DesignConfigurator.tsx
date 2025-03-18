@@ -3,13 +3,27 @@
 import HandleComponent from '@/components/HandleComponent'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { cn } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
 import NextImage from 'next/image'
 import { Rnd } from 'react-rnd'
-import { RadioGroup, Radio } from '@headlessui/react'
-import { COLORS } from '@/validators/option-validator'
+import { RadioGroup, Radio, Description } from '@headlessui/react'
+import {
+  COLORS,
+  FINISHES,
+  MATERIALS,
+  MODELS,
+} from '@/validators/option-validator'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
+import { DropdownMenu, DropdownMenuPortal } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@radix-ui/react-dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { ArrowRight, Check, ChevronsUpDown } from 'lucide-react'
+import { BASE_PRICE } from '@/config/products'
 
 interface DesignConfiguratorProps {
   configId: string
@@ -24,12 +38,36 @@ const DesignConfigurator = ({
 }: DesignConfiguratorProps) => {
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number]
+    model: (typeof MODELS.options)[number]
+    material: (typeof MATERIALS.options)[number]
+    finish: (typeof FINISHES.options)[number]
   }>({
     color: COLORS[0],
+    model: MODELS.options[0],
+    material: MATERIALS.options[0],
+    finish: FINISHES.options[0],
   })
 
+  const [renderedDimension, setRenderedDimension] = useState({
+    width: imageDimensions.width / 4,
+    height: imageDimensions.height / 4,
+  })
+
+  const [renderedPosition, setRenderedPosition] = useState({
+    x: 150,
+    y: 205,
+  })
+
+  async function saveConfiguration() {
+    try {
+
+    } catch (err) {
+      
+    }
+  }
+
   return (
-    <div className='relative mt-20 grid grid-cols-3 mb-20 pb-20'>
+    <div className='relative mt-20 grid grid-cols-1 lg:grid-cols-3 mb-20 pb-20'>
       <div className='relative h-[37.5rem] overflow-hidden col-span-2 w-full max-w-4xl flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'>
         <div className='relative w-60 bg-opacity-50 pointer-events-none aspect-[896/1831]'>
           <AspectRatio
@@ -58,6 +96,19 @@ const DesignConfigurator = ({
             height: imageDimensions.height / 4,
             width: imageDimensions.width / 4,
           }}
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          onResizeStop={(_, __, ref, ___, { x, y }) => {
+            setRenderedDimension({
+              height: Number.parseInt(ref.style.height.slice(0, -2)),
+              width: Number.parseInt(ref.style.width.slice(0, -2)),
+            })
+
+            setRenderedPosition({ x, y })
+          }}
+          onDragStop={(_, data) => {
+            const { x, y } = data
+            setRenderedPosition({ x, y })
+          }}
           className='absolute z-20 border-[3px] border-primary'
           lockAspectRatio
           resizeHandleComponent={{
@@ -78,7 +129,7 @@ const DesignConfigurator = ({
         </Rnd>
       </div>
 
-      <div className='h-[37.5rem] flex flex-col bg-white'>
+      <div className='h-[37.5rem] w-full col-span-full lg:col-span-1 flex flex-col bg-white'>
         <ScrollArea className='relative flex-1 overflow-auto'>
           <div
             aria-hidden='true'
@@ -91,43 +142,166 @@ const DesignConfigurator = ({
             </h2>
             <div className='w-full h-px bg-zinc-200 my-6' />
             <div className='relative mt-4 h-full flex flex-col justify-between'>
-              <RadioGroup
-                value={options.color}
-                onChange={(val) => {
-                  setOptions((prev) => ({
-                    ...prev,
-                    color: val,
-                  }))
-                }}
-              >
-                <Label>Color: {options.color.label}</Label>
-                <div className='mt-3 flex items-center space-x-3'>
-                  {COLORS.map((color) => (
-                    <Radio
-                      key={color.label}
-                      value={color}
-                      className={({ checked }) =>
-                        cn(
-                          'relative flex cursor-pointer items-center justify-center rounded-full active:ring-0 focus:ring-0 active:outline-none  focus:outline-none border-4 border-transparent',
-                          {
-                            [`border-${color.tw}`]: checked,
-                          }
-                        )
-                      }
-                    >
-                      <span
-                        className={cn(
-                          `bg-${color.tw}`,
-                          'h-8 w-8 rounded-full border border-black border-opacity-10'
-                        )}
-                      />
-                    </Radio>
-                  ))}
+              <div className='flex flex-col gap-6'>
+                <RadioGroup
+                  value={options.color}
+                  onChange={(val) => {
+                    setOptions((prev) => ({
+                      ...prev,
+                      color: val,
+                    }))
+                  }}
+                >
+                  <Label>Color: {options.color.label}</Label>
+                  <div className='mt-3 flex items-center space-x-3'>
+                    {COLORS.map((color) => (
+                      <Radio
+                        key={color.label}
+                        value={color}
+                        className={({ checked }) =>
+                          cn(
+                            'relative flex cursor-pointer items-center justify-center rounded-full active:ring-0 focus:ring-0 active:outline-none  focus:outline-none border-4 border-transparent',
+                            {
+                              [`border-${color.tw}`]: checked,
+                            },
+                          )
+                        }
+                      >
+                        <span
+                          className={cn(
+                            `bg-${color.tw}`,
+                            'h-8 w-8 rounded-full border border-black border-opacity-10',
+                          )}
+                        />
+                      </Radio>
+                    ))}
+                  </div>
+                </RadioGroup>
+
+                <div className='relative flex flex-col gap-3 w-full'>
+                  <Label>Model</Label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant='outline'
+                        // biome-ignore lint/a11y/useSemanticElements: <explanation>
+                        role='combobox'
+                        className='w-full justify-between'
+                      >
+                        {options.model.label}
+                        <ChevronsUpDown className='ml-2 size-4 shrink-0 opacity-50' />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuContent className='w-64 z-50 border border-zinc-300 rounded-md shadow-md'>
+                        {MODELS.options.map((model) => (
+                          <DropdownMenuItem
+                            key={model.label}
+                            className={cn(
+                              'flex text-sm gap-1 items-center p-1.5 cursor-pointer bg-white hover:bg-zinc-100',
+                              {
+                                'bg-zinc-100':
+                                  model.label === options.model.label,
+                              },
+                            )}
+                            onClick={() => {
+                              setOptions((prev) => ({ ...prev, model }))
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                'mr-2 size-4',
+                                model.label === options.model.label
+                                  ? 'opacity-100'
+                                  : 'opacity-0',
+                              )}
+                            />
+                            {model.label}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenu>
                 </div>
-              </RadioGroup>
+
+                {[MATERIALS, FINISHES].map(
+                  ({ name, options: selectableOptions }) => (
+                    <RadioGroup
+                      key={name}
+                      value={options[name]}
+                      onChange={(val) => {
+                        setOptions((prev) => ({
+                          ...prev,
+                          [name]: val,
+                        }))
+                      }}
+                    >
+                      <Label>
+                        {name.slice(0, 1).toUpperCase() + name.slice(1)}
+                      </Label>
+                      <div className='mt-3 space-y-4'>
+                        {selectableOptions.map((option) => (
+                          <Radio
+                            key={option.value}
+                            value={option}
+                            className={({ checked }) =>
+                              cn(
+                                'relative block cursor-pointer rounded-lg bg-white px-6 py-4 shadow-sm border-2 border-zinc-200 focus:outline-none ring-0 focus:ring-0 outline-none sm:flex sm:justify-between',
+                                {
+                                  'border-primary': checked,
+                                },
+                              )
+                            }
+                          >
+                            <span className='flex items-center'>
+                              <span className='flex flex-col text-sm'>
+                                <Label className='font-medium text-gray-900'>
+                                  {option.label}
+                                </Label>
+
+                                {option.description ? (
+                                  <Description className='text-gray-500'>
+                                    <span className='block sm:inline'>
+                                      {option.description}
+                                    </span>
+                                  </Description>
+                                ) : null}
+                              </span>
+                            </span>
+
+                            <Description className='mt-2 flex text-sm sm:ml-4 sm:mt-0 sm:flex-col sm:text-right'>
+                              <span className='font-medium text-gray-900'>
+                                {formatPrice(option.price / 100)}
+                              </span>
+                            </Description>
+                          </Radio>
+                        ))}
+                      </div>
+                    </RadioGroup>
+                  ),
+                )}
+              </div>
             </div>
           </div>
         </ScrollArea>
+
+        <div className='w-full px-8 h-16 bg-white'>
+          <div className='h-px w-full bg-zinc-200' />
+          <div className='w-full h-full flex justify-end items-center'>
+            <div className='w-full flex gap-6 items-center'>
+              <p className='font-medium whitespace-nowrap'>
+                {formatPrice(
+                  (BASE_PRICE + options.finish.price + options.material.price) /
+                    100,
+                )}
+              </p>
+              <Button size='sm' className='w-full'>
+                Continue
+                <ArrowRight className='size-4 ml-1.5 inline' />
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
