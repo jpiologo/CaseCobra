@@ -6,7 +6,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn, formatPrice } from '@/lib/utils'
 import NextImage from 'next/image'
 import { Rnd } from 'react-rnd'
-import { useToast } from '@/components/ui/use-toast'
 import { RadioGroup, Radio, Description } from '@headlessui/react'
 import {
   COLORS,
@@ -25,8 +24,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Check, ChevronsUpDown } from 'lucide-react'
 import { BASE_PRICE } from '@/config/products'
-import { resolve } from 'path'
 import { useUploadThing } from '@/lib/uploadthing'
+import { useRouter } from 'next/navigation'
+// biome-ignore lint/style/useImportType: <explanation>
+import { saveConfig as _saveConfig, SaveConfigArgs } from './actions'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 interface DesignConfiguratorProps {
   configId: string
@@ -39,7 +42,23 @@ const DesignConfigurator = ({
   imageUrl,
   imageDimensions,
 }: DesignConfiguratorProps) => {
-  const { toast } = useToast()
+  const router = useRouter()
+
+  const { mutate: saveConfig, isPending } = useMutation({
+    mutationKey: ['save-config'],
+    mutationFn: async (args: SaveConfigArgs) => {
+      await Promise.all([saveConfiguration(), _saveConfig(args)])
+    },
+    onError: () => {
+      toast('Something went wrong!', {
+        description: 'Please try it again.',
+      })
+    },
+    onSuccess: () => {
+      router.push(`/configure/preview?id=${configId}`)
+    },
+  })
+
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number]
     model: (typeof MODELS.options)[number]
@@ -95,6 +114,7 @@ const DesignConfigurator = ({
       const userImage = new Image()
       userImage.crossOrigin = 'anonymous'
       userImage.src = imageUrl
+
       // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
       await new Promise((resolve) => (userImage.onload = resolve))
 
@@ -110,20 +130,17 @@ const DesignConfigurator = ({
       const base64Data = base64.split(',')[1]
 
       const blob = base64ToBlob(base64Data, 'image/png')
-      const file = new File([blob], 'filename.png', { type: 'image.png' })
+      const file = new File([blob], 'filename.png', { type: 'image/png' })
 
       await startUpload([file], { configId })
     } catch (err) {
-      toast({
-        title: 'Something went wrong!',
-        description:
-          'There was a problem while saving your config, please try again.',
-        variant: 'destructive',
+      toast('Something went wrong!', {
+        description: `${err}. Please try it again.`,
       })
     }
   }
 
-  function base64ToBlob(base64Data: string, mimeType: string) {
+  function base64ToBlob(base64: string, mimeType: string) {
     const byteCharacters = atob(base64)
     const byteNumbers = new Array(byteCharacters.length)
     for (let i = 0; i < byteCharacters.length; i++) {
@@ -366,9 +383,22 @@ const DesignConfigurator = ({
                     100,
                 )}
               </p>
-              <Button size='sm' className='w-full'>
+              <Button
+                disabled={isPending}
+                onClick={() =>
+                  saveConfig({
+                    configId,
+                    color: options.color.value,
+                    finish: options.finish.value,
+                    material: options.material.value,
+                    model: options.model.value,
+                  })
+                }
+                size='sm'
+                className='w-full'
+              >
                 Continue
-                <ArrowRight className='size-4 ml-1.5 inline' />
+                <ArrowRight className='h-4 w-4 ml-1.5 inline' />
               </Button>
             </div>
           </div>

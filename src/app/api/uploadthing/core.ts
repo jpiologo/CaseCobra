@@ -35,7 +35,7 @@ export const ourFileRouter = {
         })
 
         return { configId: configuration.id }
-      // biome-ignore lint/style/noUselessElse: <explanation>
+        // biome-ignore lint/style/noUselessElse: <explanation>
       } else {
         const updatedConfiguration = await db.configuration.update({
           where: {
@@ -46,7 +46,7 @@ export const ourFileRouter = {
           },
         })
 
-        return {configId: updatedConfiguration.id}
+        return { configId: updatedConfiguration.id }
       }
     }),
 } satisfies FileRouter
