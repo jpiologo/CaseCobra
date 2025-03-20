@@ -30,6 +30,11 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     totalPrice += PRODUCT_PRICES.finish.textured
   }
 
+  const {} = useMutation({
+    mutationKey: ['get-checkout-session'],
+    mutationFn:
+  })
+
   return (
     <>
       <div
