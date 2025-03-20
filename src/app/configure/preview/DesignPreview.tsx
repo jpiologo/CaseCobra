@@ -13,11 +13,16 @@ import { createCheckoutSession } from './actions'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useMutation } from '@tanstack/react-query'
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+import LoginModal from '@/components/LoginModal'
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const router = useRouter()
+  const { id } = configuration
+  const { user } = useKindeBrowserClient()
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
   
-  const [showConfetti, setShowConfetti] = useState(false)
+  const [showConfetti, setShowConfetti] = useState<boolean>(false)
   useEffect(() => setShowConfetti(true))
 
   const { color, model, finish, material } = configuration
@@ -53,6 +58,17 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     }
   })
 
+  const handleCheckout = () => {
+    if(user) {
+      //create payment session
+      createPaymentSession({ configId: id })
+    } else {
+      //Please log in
+      localStorage.setItem('configurationId', id)
+      setIsLoginModalOpen(true)
+    }
+  }
+
   return (
     <>
       <div
@@ -64,6 +80,8 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
           config={{ elementCount: 200, spread: 300 }}
         />
       </div>
+
+      <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
 
       <div className='mt-20 grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12'>
         <div className='sm:col-span-4 md:col-span-3 md:row-span-2 md:row-end-2'>
@@ -144,7 +162,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
             </div>
 
             <div className='mt-8 flex justify-end pb-12'>
-              <Button onClick={() => createPaymentSession({configId: configuration.id})} className='px-4 sm:px-6 lg:px-8'>
+              <Button onClick={() => handleCheckout()} className='px-4 sm:px-6 lg:px-8'>
                 Check out <ArrowRight className='size-4 ml-1.5 inline' />
               </Button>
             </div>
