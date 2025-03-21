@@ -23,7 +23,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
   
   const [showConfetti, setShowConfetti] = useState<boolean>(false)
-  useEffect(() => setShowConfetti(true))
+  useEffect(() => setShowConfetti(true), [])
 
   const { color, model, finish, material } = configuration
   const tw = COLORS.find((supportedColor) => supportedColor.value === color)?.tw
@@ -77,7 +77,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
       >
         <Confetti
           active={showConfetti}
-          config={{ elementCount: 200, spread: 300 }}
+          config={{ elementCount: 500, spread: 300 }}
         />
       </div>
 
@@ -85,7 +85,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
 
       <div className='mt-20 grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12'>
         <div className='sm:col-span-4 md:col-span-3 md:row-span-2 md:row-end-2'>
-          {/* biome-ignore lint/style/noNonNullAssertion: <explanation> */}
+          
           <Phone
             className={cn(`bg-${tw}`)}
             // biome-ignore lint/style/noNonNullAssertion: <explanation>
