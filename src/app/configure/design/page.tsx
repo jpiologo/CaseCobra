@@ -2,16 +2,15 @@ import { db } from '@/db'
 import { notFound } from 'next/navigation'
 import DesignConfigurator from './DesignConfigurator'
 
-interface PageProps {
-  searchParams?: Record<string, string | string[] | undefined>
-}
-
-const Page = async ({ searchParams }: PageProps) => {
-  if (!searchParams) {
-    return notFound()
-  }
-
-  const id = searchParams.id
+// Definindo a tipagem correta para searchParams como Promise
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) => {
+  // Resolvendo o valor de searchParams com await
+  const resolvedSearchParams = await searchParams
+  const id = resolvedSearchParams.id
 
   if (!id || typeof id !== 'string') {
     return notFound()
