@@ -3,6 +3,10 @@ import { stripe } from '@/lib/stripe'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
+import { Resend } from 'resend'
+import OrderReceivedEmail from '@/components/emails/OrderReceivedEmail'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: Request) {
   try {
@@ -41,7 +45,7 @@ export async function POST(req: Request) {
       // biome-ignore lint/style/noNonNullAssertion:
       const shippingAddress = session.shipping_details!.address
 
-      await db.order.update({
+      const updatedOrder = await db.order.update({
         where: {
           id: orderId,
         },
@@ -81,12 +85,41 @@ export async function POST(req: Request) {
           },
         },
       })
+
+      await resend.emails.send({
+        from: 'CaseCobra <joaotpiologo@hotmail.com>',
+        to: [event.data.object.customer_details.email],
+        subject: 'Thanks for your order!',
+        react: OrderReceivedEmail({
+          orderId,
+          orderDate: updatedOrder.createdAt.toLocaleDateString(),
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          shippingAddress: {
+            // biome-ignore lint/style/noNonNullAssertion:
+            name: session.customer_details!.name!,
+            // biome-ignore lint/style/noNonNullAssertion:
+            city: shippingAddress!.city!,
+            // biome-ignore lint/style/noNonNullAssertion:
+            country: shippingAddress!.country!,
+            // biome-ignore lint/style/noNonNullAssertion:
+            postalCode: shippingAddress!.postal_code!,
+            // biome-ignore lint/style/noNonNullAssertion:
+            street: shippingAddress!.line1!,
+            // biome-ignore lint/style/noNonNullAssertion:
+            state: shippingAddress!.state,
+          },
+        }),
+      })
     }
 
-    return NextResponse.json({result: event, ok: true})
+    return NextResponse.json({ result: event, ok: true })
   } catch (err) {
     console.error(err)
 
-    return NextResponse.json({message: 'Something went wrong', ok: false}, {status: 500})
+    return NextResponse.json(
+      { message: 'Something went wrong', ok: false },
+      { status: 500 },
+    )
   }
 }
