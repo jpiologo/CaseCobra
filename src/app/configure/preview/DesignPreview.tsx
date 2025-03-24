@@ -19,9 +19,9 @@ import LoginModal from '@/components/LoginModal'
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const router = useRouter()
   const { id } = configuration
-  const { user, isLoading } = useKindeBrowserClient()
+  const { user } = useKindeBrowserClient()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
-  
+
   const [showConfetti, setShowConfetti] = useState<boolean>(false)
   useEffect(() => setShowConfetti(true), [])
 
@@ -47,32 +47,27 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     totalPrice += PRODUCT_PRICES.finish.textured
   }
 
-  const {mutate: createPaymentSession} = useMutation({
+  const { mutate: createPaymentSession } = useMutation({
     mutationKey: ['get-checkout-session'],
     mutationFn: createCheckoutSession,
-    onSuccess: ({url}) => {
-      if(url) {
+    onSuccess: ({ url }) => {
+      if (url) {
         router.push(url)
       } else {
         throw new Error('Unable to retrieve payment URL.')
       }
     },
     onError: () => {
-      toast.error(
-        'Something went wrong. Please try again!'
-      )
-    }
+      toast.error('Something went wrong. Please try again!')
+    },
   })
 
   const handleCheckout = () => {
-
-    if (isLoading) return
-
-    if(user) {
-      //create payment session
+    if (user) {
+      // create payment session
       createPaymentSession({ configId: id })
     } else {
-      //Please log in
+      // need to log in
       localStorage.setItem('configurationId', id)
       setIsLoginModalOpen(true)
     }
@@ -90,11 +85,10 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
         />
       </div>
 
-      
+      <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
 
       <div className='mt-20 flex flex-col items-center md:grid text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12'>
         <div className='md:col-span-4 lg:col-span-3 md:row-span-2 md:row-end-2'>
-          
           <Phone
             className={cn(`bg-${tw}`, 'max-w-[150px] md:max-w-full')}
             // biome-ignore lint/style/noNonNullAssertion: <explanation>
@@ -171,14 +165,17 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
             </div>
 
             <div className='mt-8 flex justify-end pb-12'>
-              <Button onClick={() => handleCheckout()} className='px-4 sm:px-6 lg:px-8'>
+              <Button
+                onClick={() => handleCheckout()}
+                className='px-4 sm:px-6 lg:px-8'
+              >
                 Check out <ArrowRight className='size-4 ml-1.5 inline' />
               </Button>
             </div>
           </div>
         </div>
       </div>
-      <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
+      
     </>
   )
 }
