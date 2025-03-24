@@ -19,11 +19,17 @@ import LoginModal from '@/components/LoginModal'
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const router = useRouter()
   const { id } = configuration
-  const { user } = useKindeBrowserClient()
+  const { user, isLoading } = useKindeBrowserClient()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
   
   const [showConfetti, setShowConfetti] = useState<boolean>(false)
   useEffect(() => setShowConfetti(true), [])
+
+  useEffect(() => {
+    if (user) {
+      setIsLoginModalOpen(false)
+    }
+  }, [user])
 
   const { color, model, finish, material } = configuration
   const tw = COLORS.find((supportedColor) => supportedColor.value === color)?.tw
@@ -59,6 +65,9 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   })
 
   const handleCheckout = () => {
+
+    if (isLoading) return
+
     if(user) {
       //create payment session
       createPaymentSession({ configId: id })
