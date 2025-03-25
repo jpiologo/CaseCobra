@@ -16,20 +16,24 @@
 ## 📸 Demonstração
 
 ### Landing Page
-
-![Landing Page](/public/Home.png)
+<div style="width: 600px;">
+  <img src="/public/Home.png" alt="Landing Page" style="width: 50%;"/>
+</div>
 
 ### Drag your image
-
-![Drag and drop zone](/public/DragnDrop.png)
+<div style="width: 600px;">
+  <img src="/public/DragnDrop.png" alt="Drag and drop zone" style="width: 50%;"/>
+</div>
 
 ### Customize your case
-
-![Customize](/public/Customize.png)
+<div style="width: 600px;">
+  <img src="/public/Customize.png" alt="Customize" style="width: 50%;"/>
+</div>
 
 ### Be happy!
-
-![Finish page](/public/beHappy.png)
+<div style="width: 600px;">
+  <img src="/public/beHappy.png" alt="Finish page" style="width: 50%;"/>
+</div>
 
 ## 📦 Funcionalidades
 
