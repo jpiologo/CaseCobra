@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+![Thumbnail](/public/thumbnail.png)
 
-## Getting Started
+# 🐍 CaseCobra Brasil
 
-First, run the development server:
+🚀 Uma loja online de capinhas personalizadas! Faça upload da sua imagem, visualize o preview e finalize sua compra com segurança.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📌 Tecnologias Utilizadas
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Next.js** (React + TypeScript) - Framework principal da aplicação
+- **Prisma** - ORM para comunicação com o banco de dados
+- **Neon** - Banco de dados PostgreSQL na nuvem
+- **Kinde** - Autenticação e gerenciamento de usuários
+- **UploadThing** - Armazenamento de imagens
+- **Stripe** - Processamento de pagamentos
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📸 Demonstração
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+![Demo video](/public/demo.webm)
 
-## Learn More
+## 📦 Funcionalidades
 
-To learn more about Next.js, take a look at the following resources:
+### 🛒 Loja Online
+- Upload de imagem personalizada para a capinha
+- Ajuste e posicionamento da imagem
+- Visualização do preview antes da compra
+- Checkout seguro com Stripe
+- Envio de e-mail de confirmação após a compra
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 📊 Dashboard do Administrador
+- Exibição do total de vendas semanal e mensal
+- Definição de metas de vendas
+- Listagem de pedidos com possibilidade de atualização de status
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Como Rodar o Projeto
 
-## Deploy on Vercel
+1. Clone o repositório:
+   ```sh
+   git clone https://github.com/seu-usuario/casecobra-brasil.git
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Acesse a pasta do projeto:
+   ```sh
+   cd casecobra-brasil
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Instale as dependências:
+   ```sh
+   npm install
+   ```
+   ou
+   ```sh
+   yarn install
+   ```
+
+4. Configure as variáveis de ambiente:
+   Crie um arquivo `.env.local` na raiz do projeto e adicione as seguintes variáveis:
+   ```env
+   DATABASE_URL= "sua-url-do-neon"
+   NEXT_PUBLIC_KINDE_CLIENT_ID= "seu-client-id"
+   NEXT_PUBLIC_KINDE_ISSUER_URL= "seu-issuer-url"
+   UPLOADTHING_SECRET= "sua-chave-uploadthing"
+   STRIPE_SECRET_KEY= "sua-chave-stripe"
+   ```
+
+5. Execute as migrações do banco de dados:
+   ```sh
+   npx prisma migrate dev
+   ```
+
+6. Inicie o servidor de desenvolvimento:
+   ```sh
+   npm run dev
+   ```
+
+   O projeto estará rodando em `http://localhost:3000`
+
+## 📜 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+---
+
+💡 _Caso tenha sugestões ou queira contribuir, fique à vontade para abrir uma issue ou um pull request!_
