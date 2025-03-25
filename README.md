@@ -15,7 +15,21 @@
 
 ## 📸 Demonstração
 
-![Demo video](/public/demo.webm)
+### Landing Page
+
+![Landing Page](/public/Home.png)
+
+### Drag your image
+
+![Drag and drop zone](/public/DragnDrop.png)
+
+### Customize your case
+
+![Customize](/public/Customize.png)
+
+### Be happy!
+
+![Finish page](/public/beHappy.png)
 
 ## 📦 Funcionalidades
 
@@ -76,7 +90,7 @@
 
 ## 📜 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+Este projeto basea-se nas aulas de Josh Tried Coding [Youtube](https://www.youtube.com/@joshtriedcoding).
 
 ---
 
